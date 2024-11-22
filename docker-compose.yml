@@ -14,4 +14,4 @@ services:
       PYTHONUNBUFFERED: 1
     volumes:
       - .:/app
-    command: flask run --host=0.0.0.0
+    command: flask run --host=0.0.0.0 --debug
