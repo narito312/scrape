@@ -1,0 +1,7 @@
+POST dock
+Content-Type: application/json
+
+{
+  "url": "https://mangadex.org/chapter/1178415e-f2ec-4e98-94df-9c1e91751738/8",
+  "filename": "mangadex_image.png"
+}

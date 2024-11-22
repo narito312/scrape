@@ -1,0 +1,17 @@
+version: '3.13.0'
+
+services:
+  flask-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:5000"
+    environment:
+      FLASK_APP: app.py
+      FLASK_RUN_HOST: 0.0.0.0
+      CHROME_BIN: /usr/bin/chromium
+      PYTHONUNBUFFERED: 1
+    volumes:
+      - .:/app
+    command: flask run --host=0.0.0.0
