@@ -172,3 +172,8 @@ for image_url in image_urls:
         print(f"Image downloaded: {img_name}")
     else:
         print("Failed to download the image.")
+
+def getBookByTitle(title):
+    response = requests.get(f"https://api.mangadex.org/manga?title={title}&limit=1")
+    data = response.json()
+    print(data)
