@@ -195,6 +195,8 @@ def search_titles(title: str, limit: int):
         "contentRating[]": ["safe", "suggestive", "erotica"],
         "order[latestUploadedChapter]": "desc",
     }
+
+
     
     headers = {"accept": "application/json"}
 
@@ -205,7 +207,33 @@ def search_titles(title: str, limit: int):
     except requests.exceptions.RequestException as e:
         print(f"Request Error: {e}")
         return None
+    
 
+#https://api.mangadex.org/chapter?limit=10&manga=71a72715-c6ba-42fe-af9f-a030b751ce27&contentRating%5B%5D=safe&contentRating%5B%5D=suggestive&contentRating%5B%5D=erotica&includeFutureUpdates=1&order%5BcreatedAt%5D=asc&order%5BupdatedAt%5D=asc&order%5BpublishAt%5D=asc&order%5BreadableAt%5D=asc&order%5Bvolume%5D=asc&order%5Bchapter%5D=asc
+def get_chapters(id: str):
+    url = "https://api.mangadex.org/chapter"
+    params = {
+        "manga": id
+    }
+    headers = {"accept": "application/json"}
+
+    req = requests.Request("GET", url, params = params, headers = headers)
+
+    prepare = req.prepare()
+
+    print (prepare.url)
+
+    try:
+        response = requests.get(url, headers=headers, params=params)
+        response.raise_for_status() 
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        print(f"Request Error: {e}")
+        return None
+
+
+
+        
 @app.get("/search/")
 def search(title: str = Query(..., description="Title of the manga"), 
            limit: int = Query(10, description="Number of results to return")):
@@ -220,9 +248,31 @@ def search(title: str = Query(..., description="Title of the manga"),
 
     results = []
     for manga in data["data"]:
+        id = manga["id"]
         title = manga["attributes"]["title"].get("en", "N/A")
         description = manga["attributes"].get("description", {}).get("en", "No description available")
-        results.append({"title": title, "description": description})
+        results.append({"title": title, "description": description, "id": id})
 
     return {"results": results}
+
+@app.get("/chapters/")
+def get_chapter_by_book_id(id: str = Query(..., description="Id of the book")):
+    data = get_chapters(id)
+    return data
+
+    # if not data:
+    #     raise HTTPException(status_code=500, detail="Failed to fetch data from MangaDex API")
+
+    # if "data" not in data:
+    #     raise HTTPException(status_code=404, detail="No results found")
+
+    # results = []
+    # for manga in data["data"]:
+    #     id = manga["id"]
+    #     title = manga["attributes"]["title"].get("en", "N/A")
+    #     description = manga["attributes"].get("description", {}).get("en", "No description available")
+    #     results.append({"title": title, "description": description, "id": id})
+
+    # return {"results": results}
     
+#poetry run uvicorn main:app --reload
